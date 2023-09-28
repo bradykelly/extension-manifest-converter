@@ -12,6 +12,8 @@
 from pathlib import Path
 import os
 
+from utils.encoding import get_file_encoding
+
 from . import Modifier
 from . import Logger
 
@@ -52,7 +54,8 @@ class ExecuteScriptModifier(Modifier):
         if str(Path(name).suffix) != '.js': continue
         path = root + os.sep + os.sep.join(dirs) + name
         if os.path.exists(path):
-          with open(path, 'r+', encoding='UTF-8') as file:
+          # The `read` was failing on some files opened with UTF-8.
+          with open(path, 'r+', encoding=get_file_encoding(path)) as file:
             data = file.read()
             seek = 'chrome.tabs.executeScript'
             if data.find(seek) == -1: continue
